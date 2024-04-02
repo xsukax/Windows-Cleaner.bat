@@ -88,4 +88,4 @@ echo Windows Clean Up Done!, You can exit by pressing any key.
 echo.
 
 pause > NUL
-exit
+call Winget-Applications-Installer-by-xsukax.bat
