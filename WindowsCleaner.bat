@@ -104,10 +104,6 @@ md %localappdata%\Temp
 echo Clearing Thumbnail Cache...
 del /s /q "%LocalAppData%\Microsoft\Windows\Explorer\*.db"
 
-:: Clearing Microsoft Store Cache
-echo Clearing Microsoft Store Cache ...
-WSReset.exe
-
 :: Flush DNS
 echo Flushing DNS...
 ipconfig /flushdns
