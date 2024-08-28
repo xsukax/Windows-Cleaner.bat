@@ -13,7 +13,7 @@ If you've been using Windows for a long time without cleaning it up, or you don'
 
 Just download the "Windows Cleaner.bat", and right click on it then run as administrator.
 
-This tool is SAFE & Guaranteed that it does not HARM your PC!, i've been using it for almost 10 Years!
+You need to read the script code and comments before running.
 
 
 # Warnings!
