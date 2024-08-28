@@ -59,6 +59,20 @@ del /s /f /q %Temp%\*.*
 del /s /f /q %AppData%\Temp\*.*
 del /s /f /q %HomePath%\AppData\LocalLow\Temp\*.*
 del /s /f /q %localappdata%\Temp\*.*
+del /f /s /q %systemdrive%\*.tmp
+del /f /s /q %systemdrive%\*._mp
+
+:: Remove log, trace, old and backup files.
+del /f /s /q %systemdrive%\*.log
+del /f /s /q %systemdrive%\*.old
+del /f /s /q %systemdrive%\*.trace
+del /f /s /q %windir%\*.bak
+
+:: Remove restored files created by an checkdisk utility.
+del /f /s /q %systemdrive%\*.chk
+
+:: Remove powercfg energy report.
+del /f /s /q %windir%\system32\energy-report.html
 
 :: Delete Used Drivers Files (Not needed because already installed)
 del /s /f /q %SYSTEMDRIVE%\AMD\*.*
@@ -85,6 +99,22 @@ md %Temp%
 md %AppData%\Temp
 md %HomePath%\AppData\LocalLow\Temp
 md %localappdata%\Temp
+
+:: Clearing Thumbnail Cache
+echo Clearing Thumbnail Cache...
+del /s /q "%LocalAppData%\Microsoft\Windows\Explorer\*.db"
+
+:: Clearing Microsoft Store Cache
+echo Clearing Microsoft Store Cache ...
+WSReset.exe
+
+:: Flush DNS
+echo Flushing DNS...
+ipconfig /flushdns
+
+:: Remove event logs.
+wevtutil.exe cl Application
+wevtutil.exe cl System
 
 :: Disable Hibernation (removes hiberfil.sys)
 powercfg -h off
@@ -148,7 +178,21 @@ del /q C:\Windows\MEMORY.dmp
 :: (a final success message is still displayed)
 cleanmgr.exe /verylowdisk /d c
 
+setlocal
 
+set /p choice="Do you want to perform storage optimization? (y/n): "
+if "%choice%"=="y" (
+    defrag C: /O /W /V /U
+    echo Storage optimization completed.
+) else if "%choice%"=="n" (
+    echo Storage optimization skipped.
+) else (
+    echo Invalid choice. Please enter 'y' or 'n'.
+)
+
+endlocal
+
+powershell -command "$ErrorActionPreference = 'Stop';$notificationTitle = 'Windows Clean Up Completed';[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > $null;$template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText01);$toastXml = [xml] $template.GetXml();$toastXml.GetElementsByTagName('text').AppendChild($toastXml.CreateTextNode($notificationTitle)) > $null;$xml = New-Object Windows.Data.Xml.Dom.XmlDocument;$xml.LoadXml($toastXml.OuterXml);$toast = [Windows.UI.Notifications.ToastNotification]::new($xml);$toast.Tag = 'Test1';$toast.Group = 'Test2';$toast.ExpirationTime = [DateTimeOffset]::Now.AddSeconds(5);$notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('xsukax Windows Cleaner');$notifier.Show($toast);"
 echo.
 echo Windows Clean Up Done!, You can exit by pressing any key.
 echo.
